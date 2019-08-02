@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.dao.MeetRoomDao">
+    <!--查询所有-->
+    <select id="findAll" resultType="com.cc.entity.MeetRoom">
+        SELECT  c.*
+        /*c.roomId,c.areaId,c.roomArea,c.roomFloor,c.roomBuilding,c.roomName,c.personCount,c.roomStatus,c.createDate,
+                c.createuser,c.lastupdatedate,c.lastupdateuser,c.manageruid,c.manager,c.isExamine,c.meetingSubDeptId,
+                c.meetingsubdept,c.roomareaname,c.callip,c.isstart,c.roomtype*/
+        from cj_meetroom c  where 1 = 1
+        <if test="roomName !=null and roomName !=''">
+            AND roomName like '%${roomName}%'
+        </if>
+    </select>
+    <!--查找一个-->
+    <select id="findOne" parameterType="java.lang.String" resultType="com.cc.entity.MeetRoom">
+         SELECT * from cj_meetroom c
+        where roomid=#{id}
+    </select>
+
+    <select id="findRoom" resultType="com.cc.entity.MeetRoom">
+        select * from cj_meetroom where roomstatus = 0 and (ispublic = 1 OR manageruid = #{manageruid} OR subOrg = #{suboffice})
+        <if test="roomareaname != null and roomareaname !='' ">
+            and roomareaname=#{roomareaname}
+        </if>
+        <if test="roombuilding != null and roombuilding !='' ">
+            and roombuilding=#{roombuilding}
+        </if>
+        <if test="roomfloor != null and roomfloor !='' ">
+            and roomfloor=#{roomfloor}
+        </if>
+    </select>
+
+    <insert id="add"  parameterType="com.cc.entity.MeetRoom">
+    	INSERT INTO cj_meetroom ( roomId, roomCode,areaId,roomArea, roomFloor, roomName, personCount,roomStatus, createDate, createUser, lastUpdateDate, lastUpdateUser, manager,meetingSubdept, roomAreaName, callIp, isStart, roomType, subOrg, roomBuilding, isPublic, isExamine )
+    	VALUES (#{roomId},#{roomCode},#{areaId},#{roomArea},#{roomFloor},#{roomName},#{personCount},#{roomStatus},#{createDate},#{createUser},#{lastUpdateDate},#{lastUpdateUser},#{manager},#{meetingSubdept},#{roomAreaName},#{callIp},#{isStart},#{roomType},#{subOrg},#{roomBuilding},#{isPublic},#{isExamine})
+    </insert>
+
+    <!--删除-->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from cj_meetroom where roomId=#{roomId}
+    </delete>
+
+    <!--修改-->
+    <update id="update" parameterType="com.cc.entity.MeetRoom">
+    	UPDATE cj_meetroom
+		SET roomCode = #{roomCode}, areaId=#{areaId}, roomArea=#{roomArea},roomAreaName=#{roomAreaName}, roomFloor=#{roomFloor}, roomBuilding=#{roomBuilding}, roomName=#{roomName}, personCount=#{personCount}, roomStatus=#{roomStatus}, createDate=#{createDate}, createUser=#{createUser}, lastUpdateDate=#{lastUpdateDate}, lastUpdateUser=#{lastUpdateUser}, managerUid=#{managerUid}, manager=#{manager}, isExamine=#{isExamine}, roomEmail=#{roomEmail}, meetingSubDeptId=#{meetingSubDeptId}, meetingSubdept=#{meetingSubdept}, roomAreaName=#{roomAreaName}, roomRegion=#{roomRegion}, isPublic=#{isPublic}, callIp=#{callIp}, isStart=#{isStart}, roomType=#{roomType}, subOrg=#{subOrg}
+		WHERE roomId = #{roomId}
+    </update>
+
+    <select id="findRoomName" resultType="com.cc.entity.MeetRoom">
+        select roomname from cj_meetroom where 1 = 1
+        <if test="areaid!=null and areaid !=''">
+            and areaid =#{areaid}
+        </if>
+        <if test="roombuilding!=null and roombuilding !=''">
+            and roombuilding =#{roombuilding}
+        </if>
+        <if test="roomfloor!=null and roomfloor !=''">
+            and roomfloor =#{roomfloor}
+        </if>
+    </select>
+
+    <select id="findRoomByRoomName" parameterType="java.lang.String" resultType="com.cc.entity.MeetRoom">
+        select roomName from cj_meetroom where roomName = #{roomName}
+    </select>
+
+</mapper>

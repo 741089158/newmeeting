@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.dao.TaskMeetingDao">
+    <!--查询所有-->
+    <select id="findMeeting" parameterType="java.lang.String" resultType="com.cc.entity.RepeatMeeting">
+        SELECT *
+        from cj_task_meeting where status = 1 AND repeatType = #{repeatType}
+        <!--<if test="repeatType !=null and repeatType !=''">
+            AND repeatType = #{repeatType}
+        </if>-->
+    </select>
+
+    <update id="update">
+        update cj_task_meeting set status = 0 where id = #{id}
+    </update>
+
+    <insert id="addRepeatReserve" parameterType="com.cc.entity.RepeatMeeting">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into cj_task_meeting (createTime,endTime,meetName,meetRoomName,type,meetTime,description,repeatType,status,isDefault,userId,title,roomId,weeks,defaultlayout)
+        values (#{createTime},#{endTime},#{meetName},#{meetRoomName},#{type},#{meetTime},#{description},#{repeatType},#{status},#{isDefault},#{userId},#{title},#{roomId},#{weeks},#{defaultlayout})
+    </insert>
+
+    <select id="findRepeatMeeting"  parameterType="java.lang.String" resultType="com.cc.entity.RepeatMeeting">
+        SELECT * FROM `cj_task_meeting` where status = 1
+        <if test="meetName !=null and meetName !=''">
+            and meetName=#{meetName}
+        </if>
+    </select>
+    
+    <select id="findMeetByUsername" parameterType="java.lang.String" resultType="com.cc.entity.RepeatMeeting">
+        SELECT *from cj_task_meeting where defaultlayout=#{username}
+        <if test="meetName!=null and meetName !='' ">
+            and meetName like '%${meetName}%'
+        </if>
+    </select>
+    
+    <delete id="deleteMeetingById" parameterType="java.lang.Integer">
+        DELETE A,T from cj_task_meeting T left join cj_appointment_meeting A on T.id = A.rid where T.id = #{pId}
+    </delete>
+
+</mapper>

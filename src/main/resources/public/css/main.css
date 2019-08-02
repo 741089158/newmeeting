@@ -1,0 +1,63 @@
+body {
+	background: #EEE;
+}
+
+.layui-custom-container {
+	/*width: 1600px;*/
+	margin: 0px auto;
+}
+
+.header {
+	height: 99px;
+	background-image: url("../image/header_bg.png");
+}
+
+.headerDateBox {
+	height: 99px;
+	line-height: 99px;
+}
+
+.headerUserBox {
+	padding-left: 10px;
+	height: 99px;
+	line-height: 99px;
+}
+
+.mainCentreCell {
+	background-color: #FFF;
+}
+
+.mainNavCell {
+	background-color: #565655;
+}
+
+.navItemBox {
+	padding: 18px 0px;
+	text-align: center;
+	cursor: pointer;
+}
+
+.navItemTitle {
+	color: #FFF;
+	height: 25px;
+	line-height: 25px;
+}
+
+.navItemBox:hover {
+	background: #B74EA6;
+}
+
+.navItemSelect {
+	background: #B74EA6;
+}
+
+.layui-btn-pink {
+	background: #B74EA6;
+}
+
+.layui-input-but {
+	height: 38px;
+	line-height: 38px;
+	padding: 0 10px;
+	font-size: 12px;
+}

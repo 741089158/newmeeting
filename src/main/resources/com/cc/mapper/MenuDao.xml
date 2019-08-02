@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.dao.MenuDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,menuName,code,ismenu,pid,createDate,url,remark,orderby,status,operuser,operdate
+    </sql>
+
+    <select id="findAll" parameterType="java.lang.String" resultType="com.cc.entity.Menu">
+        select
+        <include refid="Base_Column_List"/>
+        from cj_menu where status = 1
+        <if test="menuName!=null and menuName !=''">
+            and menuName = #{menuName}
+        </if>
+    </select>
+
+    <select id="findOne" parameterType="java.lang.Integer" resultType="com.cc.entity.Menu">
+        select
+        <include refid="Base_Column_List"/>
+        from cj_menu where id=#{id}
+    </select>
+
+    <update id="update" parameterType="com.cc.entity.Menu">
+        update cj_menu set menuName = #{menuName}, code = #{code},isMenu = #{isMenu},pid = #{pid},createDate = #{createDate},url = #{url},remark = #{remark},orderby = #{orderby},status = #{status},operdate = #{operdate},operuser = #{operuser}
+    </update>
+
+    <insert id="add" parameterType="com.cc.entity.Menu">
+        insert into cj_menu (menuName,code,isMenu,pid,createDate,url,remark,orderby,status,operdate,operuser) values (#{menuName},#{code},#{isMenu},#{pid},#{createDate},#{url},#{remark},#{orderby},#{status},#{operdate},#{operuser})
+    </insert>
+
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from cj_menu where id = #{id}
+    </delete>
+
+    <!--获取菜单列表树  空的就返回这个-->
+    <select id="menuTreeList" resultType="com.cc.entity.TreeNode">
+      select m1.id as id,
+      ( case when (m2.id =0 or m2.id is null) THEN
+      0 else m2.id end
+      ) as pid,m1.menuName as name,(
+      case when (m2.id =0 or m2.id is null) THEN
+      'true' else 'false' end
+      ) as open
+      from cj_menu m1 left join cj_menu m2 on m1.pid = m2.id
+      order by m1.id asc
+    </select>
+
+
+    <!--根据角色持有菜单 获取菜单列表树-->
+    <select id="menuTreeListByMenuIds" resultType="com.cc.entity.TreeNode">
+        select m1.id as id,( case when (m2.id =0 or m2.id is null) THEN
+        0 else m2.id end
+        ) as pid,
+        m1.menuName as name,
+        (
+        case when (m2.id =0 or m2.id is null) THEN
+        'true' else 'false' end
+        ) as open,
+        (
+        case when (m3.id = 0 or m3.id is null ) then
+        'false' else 'true' end
+        ) as `checked`
+        from cj_menu m1 left join cj_menu m2 on m1.pid = m2.id
+        left join
+        (select id from cj_menu where id in
+        <foreach collection="list" index="index" item="i" open="("
+                 separator="," close=")">
+            #{i}
+        </foreach>
+        ) m3 on m1.id = m3.id
+        order by m1.id asc
+    </select>
+
+    <!--根据角色id获取菜单id-->
+    <select id="getMenuIdsByRoleId" resultType="java.lang.Integer">
+        select menuId from
+        cj_role_menu where roleId = #{roleId}
+    </select>
+
+    <!-- 根据角色获取菜单-->
+    <select id="getMenusByRoleIds" resultType="com.cc.entity.MenuNode">
+        SELECT
+        m1.id AS id,
+        (
+        CASE
+        WHEN (m2.id = 1 OR m2.id IS NULL) THEN
+        1
+        ELSE
+        m2.id
+        END
+        ) AS parentId,
+        m1.menuName as name,
+        m1.levels as levels,
+        m1.orderby as num
+        FROM
+        cj_menu m1
+        LEFT join cj_menu m2 ON m1.pid = m2.id
+        INNER JOIN (
+        SELECT
+        id
+        FROM
+        cj_menu
+        WHERE
+        id IN (
+        SELECT
+        id
+        FROM
+        cj_role_menu rela
+        WHERE
+        rela.roleId IN
+        <foreach collection="list" index="index" item="i" open="(" separator="," close=")">
+            #{i}
+        </foreach>
+        )
+        ) m3 ON m1.id = m3.menuId
+        where m1.menuFlag = 'Y'
+        order by levels,m1.orderby asc
+    </select>
+
+    <delete id="deleteMenu" parameterType="java.lang.Integer">
+        delete  from cj_role_menu where roleId = #{roleId}
+    </delete>
+
+    <insert id="addMenu" parameterType="java.lang.Integer">
+        insert into cj_role_menu (roleId,menuId) values (#{roleId},#{menuId})
+    </insert>
+
+</mapper>

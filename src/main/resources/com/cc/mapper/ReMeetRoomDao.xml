@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.dao.ReMeetRoomDao">
+
+   <!-- <sql id="Base_Column_List">
+        roomId,areaId,roomarea,roomfloor,roombuilding,roomname,personcount,roomstatus,
+    </sql>-->
+
+    <!--查询areaId 会议室名称-->
+    <select id="findArea" parameterType="java.lang.String" resultType="com.cc.entity.MeetRoom">
+        select roomareaname,roomarea from cj_meetroom where roomstatus = 0 and (ispublic = 1 OR manageruid = #{manageruid} OR subOrg = #{suboffice}) group by roomareaname desc
+    </select>
+
+    <!--查询建筑-->
+    <select id="findBuilding" resultType="com.cc.entity.MeetRoom">
+        select  roombuilding from cj_meetroom where roomareaname = #{roomareaname} GROUP BY roombuilding desc
+    </select>
+
+    <!--查询楼层-->
+    <select id="findFloor" parameterType="String" resultType="com.cc.entity.MeetRoom">
+        select roomfloor from cj_meetroom where roomareaname=#{roomareaname} AND roombuilding=#{roombuilding}  GROUP BY roomfloor asc
+    </select>
+
+
+    <!--查询会议室-->
+    <select id="findRoom" parameterType="String" resultType="com.cc.entity.MeetRoom">
+        select * from cj_meetroom where roomstatus = 0 and ispublic = 1 and roomareaname=#{roomareaname} and roombuilding=#{roombuilding} and roomfloor =#{roomfloor}
+        <if test="roomId!=null || roomId !='' ">
+            and roomId not in(#{roomId})
+        </if>
+    </select>
+
+
+    <select id="roomAreaManager" resultType="com.cc.entity.MeetRoom">
+        select areaid ,roomareaname,roomarea from cj_meetroom group by areaid desc
+    </select>
+
+
+    <!--查询建筑2-->
+    <select id="findBuilding2" resultType="com.cc.entity.MeetRoom">
+    	SELECT DISTINCT areaid, roombuilding FROM cj_meetroom WHERE roomareaname = #{area}
+    </select>
+
+
+
+    <select id="findById" resultType="com.cc.entity.MeetRoom">
+        select  * from cj_meetroom where roomId =#{0}
+    </select>
+
+    <select id="findByDate" parameterType="String" resultType="com.cc.entity.Appointment_Meeting">
+        select meetRoomId from cj_appointment_meeting where meetDate BETWEEN #{startTime} AND #{endTime}
+    </select>
+
+    <!--查询会议室 -->
+    <select id="findFloorWithRooms" parameterType="String" resultType="com.cc.entity.MeetRoom">
+		SELECT
+			*
+		FROM
+			cj_meetroom t
+		WHERE
+			t.roomareaname = #{roomareaname}
+		AND t.roombuilding = #{roombuilding}
+		AND (
+			t.ispublic = 1
+			OR t.manageruid = #{manageruid}
+			OR t.subOrg = #{department}
+		) ORDER BY roomname asc
+    </select>
+
+</mapper>

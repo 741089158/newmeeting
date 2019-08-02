@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.dao.MeetDeptDao">
+    <!--查询所有-->
+    <select id="findAll" resultType="java.util.Map">
+        SELECT s.subofficename,d.deptid,d.deptname,d.deptaddr,d.depttel,d.email,d.starttime
+        FROM cj_dept d,cj_suboffice s
+        WHERE d.subid=s.subofficeid
+        <if test="deptName !=null and deptName !=''">
+            AND deptName like '%${deptName}%'
+        </if>
+    </select>
+    <insert id="add" parameterType="com.cc.entity.MeetDept">
+        insert into cj_dept values(#{deptid},#{deptaddr},#{deptdefault},#{deptname},#{depttel},#{email},#{subid},#{endtime},#{starttime})
+
+    </insert>
+    <select id="findByid" resultType="com.cc.entity.MeetDept">
+    select deptid,deptname,deptaddr,depttel,email,subid FROM cj_dept WHERE deptid = #{deptId}
+
+    </select>
+    <update id="update" parameterType="com.cc.entity.MeetDept">
+      UPDATE cj_dept SET deptname=#{deptname},deptaddr=#{deptaddr},depttel=#{depttel},email=#{email},subid=#{subid}
+      WHERE deptid=#{deptid}
+    </update>
+    <delete id="delete" parameterType="com.cc.entity.MeetDept">
+        DELETE FROM cj_dept WHERE deptid=#{deptid}
+      </delete>
+
+    <select id="findOffice" resultType="com.cc.entity.SubOffice">
+        select subOfficeId,subOfficeName,remark,orderBy,subId,isDisabled,operUser,operDate from  cj_suboffice  group by  subOfficeName
+    </select>
+
+    <select id="findDept" resultType="java.util.Map">
+        select deptid,deptname from cj_dept group  by deptname
+    </select>
+
+    <select id="findByDeptName" parameterType="java.lang.String" resultType="com.cc.entity.MeetDept">
+        select deptname  from cj_dept where deptname = #{deptname}
+    </select>
+
+</mapper>

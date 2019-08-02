@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.dao.MailDao">
+    <!--查询所有-->
+    <select id="findAll" resultType="com.cc.entity.Mail">
+     select * from cj_mail
+     where isdisabled = 0
+     <if test="status != null and status != ''">
+            and status =#{status}
+     </if>
+    </select>
+    <!-- 添加 -->
+    <insert id="add" parameterType="com.cc.entity.Mail">
+        insert into cj_mail(receivemailaccount,mailtitle,mailsubject,mailcontent,createdate,remark,status,isdisabled,senddate,mailsign,mid)
+        values(#{receivemailaccount},#{mailtitle},#{mailsubject},#{mailcontent},#{createdate},#{remark},#{status},#{isdisabled},#{senddate},#{mailsign},#{mid})
+    </insert>
+    <!--修改-->
+    <update id="update" parameterType="com.cc.entity.Mail">
+        update cj_mail set status=#{status},senddate=#{senddate},isdisabled=#{isdisabled}
+        where id=#{id}
+    </update>
+    <!--查找一个-->
+    <select id="findByid" parameterType="java.lang.Integer" resultType="com.cc.entity.Mail">
+         select  *
+        from cj_mail 
+        where id=#{id}
+    </select>
+    
+    <select id="findMailByMid" parameterType="java.lang.String">
+         select  *
+        from cj_mail
+        where mid=#{pId}
+    </select>
+</mapper>

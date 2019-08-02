@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.dao.AppointmentMeetDao">
+
+    <select id="findAll" resultType="com.cc.entity.Remeet">
+          select * from cj_appointment_meeting where state =1
+        <if test="meetName !=null and meetName !=''">
+            AND meetName like '%${meetName}%'
+        </if>
+    </select>
+
+    <select id="findMeeting" resultType="com.cc.entity.Remeet">
+          select * from cj_appointment_meeting where state = #{state}  AND repeatType = #{repeatType}
+    </select>
+
+
+    <!--预订会议-->
+    <insert id="appointmentMeet" parameterType="com.cc.entity.Remeet" >
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+      insert into cj_appointment_meeting(id,uri,requireCallId,defaultLayout,meetName,meetDate,meetTime,meetLaber,meetDescription,meetType,meetRoomId,meetRoomName,state,userId,repeatType,rid)
+        VALUES (#{id},#{uri},#{requireCallId},#{defaultLayout},#{meetName},#{meetDate},#{meetTime},#{meetLaber},#{meetDescription},#{meetType},#{meetRoomId},#{meetRoomName},1,#{userId},#{repeatType},#{rid})
+    </insert>
+
+    <!--预订循环会议-->
+    <insert id="repeatMeet" parameterType="com.cc.entity.Remeet" >
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into cj_appointment_meeting(id,defaultLayout,meetName,meetDate,meetTime,meetlaber,meetDescription,meetType,meetRoomId,meetRoomName,state,userId,repeatType,rid)
+        VALUES (#{id},#{defaultLayout},#{meetName},#{meetDate},#{meetTime},#{meetLaber},#{meetDescription},#{meetType},#{meetRoomId},#{meetRoomName},1,#{userId},#{repeatType},#{rid})
+    </insert>
+
+    <insert id="appointmentVideoMeet" parameterType="com.cc.entity.Remeet">
+         insert into cj_appointment_meeting(id,meetName,defaultLayout,uri,requireCallId,defaultLayout,callId,nonMemberAccess,callProfile,callLegProfile,meetDate,meetTime,meetlaber,meetDescription,meetType,meetRoomId,meetRoomName,state,userId,repeatType)
+        VALUES (#{id},#{defaultLayout},#{meetName},#{uri},#{requireCallId},#{defaultLayout},#{callId},#{nonMemberAccess},#{callProfile},#{callLegProfile},#{meetDate},#{meetTime},#{meetLaber},#{meetDescription},#{meetType},#{meetRoomId},#{meetRoomName},1,#{userId},#{repeatType})
+
+    </insert>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,meetName,uri,requireCallId,defaultLayout,callId,nonMemberAccess,callProfile,callLegProfile,meetDate,meetTime,
+        meetLaber,meetDescription,meetRoomId,meetType,state,meetRoomName,userId
+    </sql>
+
+    <!--根据用户名查询参与的历史会议-->
+    <select id="findPageHistory" parameterType="java.lang.Integer" resultType="com.cc.entity.Remeet">
+        select a.*
+        from cj_appointment_meeting a,cj_remeet_user r
+        where a.id = r.meetId and  a.state = 0 and r.userId = #{username}
+        <if test="meetName!=null and meetName !='' ">
+            and a.meetName like '%${meetName}%'
+        </if>
+    </select>
+
+    <!--根据历史会议id查询参会人员-->
+    <select id="findHistoryUser" parameterType="java.lang.Integer" resultType="com.cc.entity.UserInternal">
+        select  u.*
+          from `cj_appointment_meeting` a,cj_remeet_user r,cj_user_internal u
+          where a.id = r.meetId and r.userId = u.id and a.id = #{id}
+    </select>
+
+    <select id="findOne" parameterType="java.lang.Integer" resultType="com.cc.entity.Remeet">
+        select * from cj_appointment_meeting where id = #{id}
+    </select>
+
+    <update id="update" parameterType="com.cc.entity.Remeet">
+        update cj_appointment_meeting  set meetName=#{meetName},meetDate=#{meetDate},meetTime=#{meetTime},
+        meetLaber=#{meetLaber},meetDescription=#{meetDescription},meetRoomId=#{meetRoomId},meetType=#{meetType},meetRoomName=#{meetRoomName},userId=#{userId}
+        where id=#{id}
+    </update>
+
+    <select id="findByRid" parameterType="java.lang.Integer" resultType="com.cc.entity.Remeet">
+        select *from cj_appointment_meeting where rid = #{rid}
+    </select>
+
+
+    <select id="findRepeatMeeting" parameterType="java.lang.Integer" resultType="com.cc.entity.RepeatMeeting">
+        select createTime,endTime,meetName,meetRoomName,type,meetTime,description,repeatType,status,isdefault,userId,title,roomId,weeks
+        from cj_task_meeting
+        where id = #{id}
+    </select>
+
+    <update id="updateState" parameterType="java.lang.Integer">
+        update cj_appointment_meeting set state = 0 where id = #{id}
+    </update>
+
+    <select id="findMeetByUserId" parameterType="java.lang.Integer" resultType="com.cc.entity.Remeet">
+        select  a.*
+        from cj_appointment_meeting  a,cj_remeet_user u
+        where a.state = 1 and a.id= u.meetId and u.userId = #{id}
+    </select>
+
+    <select id="findMeetByUsername" parameterType="java.lang.String" resultType="com.cc.entity.Remeet">
+        select a.*
+        from cj_appointment_meeting a,cj_remeet_user r
+        where a.id = r.meetId  and a.state = 1 and r.userId = #{username}
+        <if test="meetName!=null and meetName !='' ">
+            and a.meetName like '%${meetName}%'
+        </if>
+        <if test="meetDate!=null and meetDate !='' ">
+            and a.meetDate like '%${meetDate}%'
+        </if>
+    </select>
+
+    <insert id="insertUserIdAndMeetId">
+        insert into cj_remeet_user (userId,meetId) values (#{userId},#{meetId})
+    </insert>
+
+    <select id="findMeetingByRoomId" parameterType="java.lang.String" resultType="com.cc.entity.Remeet">
+        select a.* from cj_appointment_meeting a where meetRoomId = #{roomId} order by a.meetDate
+    </select>
+
+    <select id="findHistoryMeeting" resultType="com.cc.entity.Remeet">
+        SELECT t.* FROM cj_appointment_meeting t,cj_remeet_user u WHERE t.state = 0 and u.meetId = t.id and u.userId = #{username} ORDER BY t.meetDate DESC
+    </select>
+
+    <delete id="deleteMeetingById" parameterType="java.lang.String">
+        DELETE A,B from cj_appointment_meeting A left join cj_remeet_user B on A.id = B.meetId where A.id = #{pId}
+    </delete>
+</mapper>

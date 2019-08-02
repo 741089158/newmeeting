@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.dao.RoleDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,roleName,createDate,roleDesc,priority,status,isDisabled,operuser,operdate,pid
+    </sql>
+
+    <select id="findAll" parameterType="java.lang.String" resultType="com.cc.entity.Role">
+        select
+        <include refid="Base_Column_List"/>
+        from cj_role where status = 1
+        <if test="roleName!=null and roleName !=''">
+            and roleName = #{roleName}
+        </if>
+    </select>
+
+    <select id="findOne" parameterType="java.lang.Integer" resultType="com.cc.entity.Role">
+        select
+        <include refid="Base_Column_List"/>
+        from cj_role where id=#{id}
+    </select>
+
+    <update id="update" parameterType="com.cc.entity.Role">
+        update cj_role set roleName = #{roleName}, createDate = #{createDate},roleDesc = #{roleDesc},priority = #{priority},status = #{status},isDisabled = #{isDisabled},operuser = #{operuser},operdate = #{operdate},pid = #{pid} where id = #{id}
+    </update>
+
+    <insert id="add" parameterType="com.cc.entity.Role">
+        insert into cj_role (roleName,createDate,roleDesc,priority,status,isDisabled,operuser,operdate,pid) values (#{roleName},#{createDate},#{roleDesc},#{priority},#{status},#{isDisabled},#{operuser},#{operdate},#{pid})
+    </insert>
+
+    <!--同时删除三张表数据-->
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete A,B,C from cj_role A left join cj_role_menu B on B.roleId=A.id
+        left join cj_user_role C on C.roleId=A.id where (B.roleId = #{id}) or (C.roleId = #{id}) or (A.id = #{id});
+    </delete>
+
+    <select id="roleTreeList" resultType="com.cc.entity.TreeNode">
+        select id AS id, PID as pId,
+		roleName as name, (case when ( PID is not null) then 'true'
+		else 'false' end) as `open` from cj_role
+    </select>
+
+    <select id="roleTreeListByUserId" resultType="com.cc.entity.TreeNode">
+        SELECT
+        r.id as id,
+        pid as pid,
+        roleName AS `name`,
+        (
+        CASE
+        WHEN (pid = 0 OR pid IS NULL) THEN
+        'true'
+        ELSE
+        'false'
+        END
+        ) as `open`,
+        (
+        CASE
+        WHEN (r1.id = 0 OR r1.id IS NULL) THEN
+        'false'
+        ELSE
+        'true'
+        END
+        ) as checked
+        FROM
+        cj_role r
+        LEFT JOIN (
+        SELECT
+        id
+        FROM
+        cj_role
+        WHERE
+        id IN
+        <foreach collection="list" index="index" item="i" open="(" separator="," close=")">
+            #{i}
+        </foreach>
+        ) r1 ON r.id = r1.id
+        ORDER BY PID ASC
+    </select>
+
+    <select id="findRoleByUserId" parameterType="java.lang.Integer" resultType="java.util.Map">
+        select roleId from cj_user_role where userId = #{userId}
+    </select>
+
+
+    <delete id="deleteRole" parameterType="java.lang.Integer">
+        delete  from cj_user_role where userId = #{userId}
+    </delete>
+
+    <insert id="addRole" parameterType="java.lang.Integer">
+        insert into cj_user_role (userId,roleId) values (#{userId},#{roleId})
+    </insert>
+</mapper>

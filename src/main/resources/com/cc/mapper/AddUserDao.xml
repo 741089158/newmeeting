@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.dao.AddUserDao">
+
+    <insert id="addUser">
+        insert into cj_remeet_user (userId,meetId) values (#{userId},#{meetId})
+    </insert>
+
+    <delete id="deleteUser">
+        delete from cj_remeet_user where userId =#{userId} and meetId=#{meetId}
+    </delete>
+    <select id="findUserByMeetId" resultType="com.cc.entity.UserInternal">
+        select * from cj_user_internal where id in(select userid from cj_remeet_user where meetID = #{meetId})
+    </select>
+
+
+    <select id="findByUserId" parameterType="java.lang.Integer" resultType="com.cc.entity.UserInternal">
+        select * from cj_user_internal where id=#{id}
+    </select>
+</mapper>

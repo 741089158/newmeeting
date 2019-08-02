@@ -1,0 +1,60 @@
+#logging:
+#  level:
+#    root: debug
+mybatis:
+   mapper-locations: classpath:/com/cc/mapper/*.xml
+# type-aliases-package: com.cc.entity
+   config-location: classpath:/mybatis-config.xml
+spring:
+   freemarker:
+      settings:
+         number_format: 0.##
+   servlet: ## ## ## ## ## ## ## ##
+      multipart:
+         enabled: true
+         file-size-threshold: 0
+         max-file-size: 10MB          #单个文件的大小
+         max-request-size: 20MB      #请求中所有文件的大小
+         resolve-lazily: false
+   datasource:
+      username: root
+      password: 2gMmN8KN4G4wuYA5
+      url: jdbc:mysql://118.190.75.192:3306/meetingroom?useUnicode=true&characterEncoding=utf-8
+      #password: root
+      #url: jdbc:mysql://10.18.88.26:3306/meetingroom?useUnicode=true&characterEncoding=utf-8
+      #url: jdbc:mysql://10.18.88.26:3306/meetingroom?useSSL=true&serverTimezone=GMT&useUnicode=true&characterEncoding=utf-8
+      driver-class-name: com.mysql.cj.jdbc.Driver
+   sendEmailAccount: ymtcmeeting@ymtc.com
+   sendEmailPassword: Wh123456
+   sendEmailSMTPHost: email.xmc.wh
+   sendEmailSMTPPort: 25
+   sendHZ: 5000
+
+---
+spring:
+   #rootPath: http://10.18.88.26:8080
+   rootPath: http://localhost:8080
+
+server:
+   port: 8080
+---
+spring:
+   profiles: development
+   rootPath: http://10.18.88.26:8080
+server:
+   port: 8080
+---
+spring:
+   profiles: production
+   rootPath: http://10.18.88.26:8080
+server:
+   port: 8080
+
+pagehelper:
+   helperDialect: mysql
+   reasonable: true
+   supportMethodsArguments: true
+   pageSizeZero: true
+   params: count=countSql
+
+

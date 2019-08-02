@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.dao.MeetUserDao">
+
+    <!--查询所有-->
+    <select id="findAll" resultType="java.util.Map">
+        SELECT u.id,u.username,u.sex,u.tel,u.email,u.suboffice,d.deptname FROM cj_user u left join cj_dept d on u.deptid=d.deptid
+        <if test="username !=null and username !=''">
+            AND username = #{username}
+        </if>
+    </select>
+
+
+    <insert id="add" parameterType="com.cc.entity.MeetUser">
+        insert into cj_user (subofficeid,username,suboffice,password,sex,email,createdate,tel,orderBy,status,isdisabled,operuser,operdate,deptId,uname,isExternal)
+        values(#{subofficeid},#{username},#{suboffice},#{password},#{sex},#{email},#{createdate},#{tel},#{orderBy},#{status},#{isdisabled},#{operuser},#{operdate},#{deptid},#{uname},#{isExternal})
+    </insert>
+
+
+    <select id="findById" resultType="java.util.Map">
+     SELECT u.id,u.subofficeid,u.username,u.suboffice,u.password,u.sex,u.email,u.tel,u.uname,
+      u.status,u.operuser,u.operdate,u.deptid,d.deptname
+      from cj_user u , cj_dept d where
+      u.deptid=d.deptid and  u.id= #{id}
+    </select>
+
+
+    <!--</update>-->
+    <update id="update" parameterType="com.cc.entity.MeetUser">
+        UPDATE cj_user SET  subofficeid=#{subofficeid},username=#{username},suboffice=#{suboffice},password=#{password},sex=#{sex},email=#{email},tel=#{tel},operdate=#{operdate},uname=#{uname},deptid=#{deptid} WHERE id=#{id}
+    </update>
+
+
+    <delete id="delete" parameterType="com.cc.entity.MeetUser">
+        DELETE FROM cj_user WHERE id=#{id}
+    </delete>
+
+    <!--查询内部联系人-->
+    <select id="findInternal" resultType="com.cc.entity.UserInternal">
+        SELECT * from cj_user_internal u
+        where 1 = 1
+        <if test="internal !=null and internal !=''">
+            AND u.internal = #{internal}
+        </if>
+        <if test="name !=null and name !=''">
+            AND u.name like '%${name}%'
+        </if>
+    </select>
+
+    <!--添加联系人-->
+    <insert id="addInternal" parameterType="com.cc.entity.UserInternal">
+        insert into cj_user_internal (name,tel,email,sex,dept,company,username,internal,status)
+        values(#{name},#{tel},#{email},#{sex},#{dept},#{company},#{username},#{internal},#{status})
+    </insert>
+
+    <!--删除联系人-->
+    <delete id="deleteInternal" parameterType="java.lang.Integer">
+        delete from cj_user_internal where id=#{id}
+    </delete>
+
+
+    <select id="findOne" parameterType="java.lang.Integer" resultType="com.cc.entity.UserInternal">
+        select id,name,tel,email,sex,dept,company,username,internal,status
+         from cj_user_internal where id=#{id}
+    </select>
+
+    <!--修改联系人-->
+    <update id="updateLinkman" parameterType="com.cc.entity.UserInternal">
+        update cj_user_internal set name=#{name},tel=#{tel},email=#{email},
+        sex=#{sex},dept=#{dept},company=#{company},username=#{username},
+        internal=#{internal},status=#{status} where id=#{id}
+    </update>
+
+
+    <select id="findByUsername" parameterType="java.lang.String" resultType="com.cc.entity.MeetUser">
+        select u.* from cj_user u where username = #{username}
+    </select>
+
+   <!-- <select id="findUserAndRoleAndMenuByUsername" parameterType="java.lang.String" resultType="com.cc.entity.MeetUser">
+        Select u.*, m.id,m.menuName
+        from cj_menu m ,cj_user u,cj_user_role ur, cj_role_menu rm
+        Where m.Id = rm.menuId and ur.roleId = rm.roleId and ur.userId = u.Id and u.username = #{username}
+    </select>-->
+
+    <select id="findMenuListByUsername" parameterType="java.lang.String" resultType="java.util.Map">
+        Select distinct m.code
+        from cj_menu m ,cj_user u,cj_user_role ur, cj_role_menu rm
+        Where m.Id = rm.menuId and ur.roleId = rm.roleId and ur.userId = u.Id and u.username = #{username}
+    </select>
+
+    <select id="getRoleIdByUserId" resultType="java.lang.Integer">
+        select roleId from cj_user_role where userId = #{id}
+    </select>
+
+</mapper>

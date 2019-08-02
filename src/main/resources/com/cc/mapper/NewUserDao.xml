@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.dao.NewUserDao">
+
+    <select id="queryAllGroup" resultType="Map">
+    	SELECT t.FullName AS ou FROM cj_deaprtment t
+    </select>
+
+    <select id="queryAllUser" resultType="Map">
+    	SELECT
+			t.RealName AS name,
+			tt.FullName AS department,
+			t.Account AS sAMAccountName,
+			t.Email AS mail
+		FROM
+			cj_deaprtment_users t
+		LEFT JOIN cj_deaprtment tt ON t.DepartmentId = tt.DepartmentId
+		WHERE
+			1 = 1
+		<if test="likeName != null and likeName != ''">
+			AND (t.RealName LIKE '%${likeName }%' OR t.Account LIKE '%${likeName }%')
+		</if>
+		<if test="group != null and group != ''">
+			AND tt.FullName = #{group }
+		</if>
+    </select>
+
+    <select id="queryUserByName" resultType="Map">
+    	SELECT
+			t.RealName AS name,
+			tt.FullName AS department,
+			t.Account AS sAMAccountName,
+			t.Email AS mail
+		FROM
+			cj_deaprtment_users t
+		LEFT JOIN cj_deaprtment tt ON t.DepartmentId = tt.DepartmentId
+		WHERE
+			t.RealName = #{name }
+    </select>
+
+    <select id="queryUserByAccount" resultType="Map">
+    	SELECT
+			t.RealName AS name,
+			tt.FullName AS department,
+			t.Account AS sAMAccountName,
+			t.Email AS mail
+		FROM
+			cj_deaprtment_users t
+		LEFT JOIN cj_deaprtment tt ON t.DepartmentId = tt.DepartmentId
+		WHERE
+			t.Account = #{account }
+    </select>
+
+    <select id="queryUserByGroup" parameterType="java.lang.String" resultType="Map">
+		SELECT d.DepartmentId,d.FullName,u.account,u.RealName,u.email FROM `cj_deaprtment` d,cj_deaprtment_users u where d.DepartmentId=u.DepartmentId and d.FullName =#{fullName}
+	</select>
+
+</mapper>

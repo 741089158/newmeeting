@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.dao.DictDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        dictId,name,code,description,pid,orderby
+    </sql>
+
+
+    <!--查询所有-->
+    <select id="findAll" resultType="com.cc.entity.Dict">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from cj_dict d
+        where 1=1
+        <if test="name !=null and name !=''">
+            AND name like '%${name}%'
+        </if>
+    </select>
+    <!--查找一个-->
+    <select id="findOne" parameterType="java.lang.Integer" resultType="com.cc.entity.Dict">
+         SELECT  d.dictId,d.name,d.code,d.description,d.pid,d.orderby
+        from cj_dict d
+        where dictId=#{dictId}
+    </select>
+
+    <!--添加-->
+    <insert id="add"  parameterType="com.cc.entity.Dict">
+        insert into cj_dict  (name,code,description,orderby,pid)
+        values (#{name},#{code},#{description},#{orderby},#{pid})
+    </insert>
+
+
+    <!--删除-->
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from cj_dict  where dictId=#{dictId}
+    </delete>
+
+    <!--修改-->
+    <update id="update" parameterType="com.cc.entity.Dict">
+        update cj_dict set name=#{name},code=#{code},description=#{description},orderby=#{orderby},pid=#{pid}
+        where dictId=#{dictId}
+    </update>
+
+
+
+
+    <select id="selectByDictId" resultType="com.cc.entity.Dict">
+        select
+        <include refid="Base_Column_List"/>
+        from cj_dict
+        where dictId = #{dictId}
+    </select>
+
+    <!--根据父id查询子列表-->
+    <select id="findByPid" parameterType="java.lang.Integer" resultType="com.cc.entity.Dict">
+        select
+        <include refid="Base_Column_List"/>
+        from cj_dict
+        where pid in(select dictId from cj_dict where dictId = #{dictId}) order by orderby asc
+    </select>
+
+    <!--模糊查询-->
+    <select id="list" resultType="map">
+        select
+        <include refid="Base_Column_List"/>
+        from cj_dict
+        where pid = 0
+        <if test="condition != null and condition != ''">
+            AND NAME like CONCAT('%',#{condition},'%')
+        </if>
+        order by orderby ASC
+    </select>
+
+
+</mapper>

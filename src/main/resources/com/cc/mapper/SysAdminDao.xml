@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cc.dao.SysAdminDao">
+
+	<insert id="save">
+		INSERT INTO cj_sysadmin VALUES ( #{sysAdmin.adminNo}, #{sysAdmin.adminName}, #{sysAdmin.createUser}, #{sysAdmin.createTime} )
+	</insert>
+
+	<delete id="delete">
+		DELETE from cj_sysadmin WHERE adminNo = #{sysAdmin.adminNo}
+	</delete>
+	
+	<select id="findOne" resultType="com.cc.entity.SysAdmin">
+		SELECT * FROM cj_sysadmin WHERE adminNo = #{key}
+	</select>
+
+	<select id="findAll" resultType="com.cc.entity.SysAdmin">
+		SELECT * FROM cj_sysadmin ORDER BY createTime
+	</select>
+	
+</mapper>
