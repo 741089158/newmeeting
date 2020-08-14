@@ -18,12 +18,12 @@ spring:
          resolve-lazily: false
    datasource:
       username: root
-      password: 2gMmN8KN4G4wuYA5
-      url: jdbc:mysql://118.190.75.192:3306/meetingroom?useUnicode=true&characterEncoding=utf-8
+      password: root
+      url: jdbc:mysql://localhost:3306/meetingroom?useSSL=true&serverTimezone=GMT&useUnicode=true&characterEncoding=utf-8
       #password: root
       #url: jdbc:mysql://10.18.88.26:3306/meetingroom?useUnicode=true&characterEncoding=utf-8
       #url: jdbc:mysql://10.18.88.26:3306/meetingroom?useSSL=true&serverTimezone=GMT&useUnicode=true&characterEncoding=utf-8
-      driver-class-name: com.mysql.cj.jdbc.Driver
+      driver-class-name: com.mysql.jdbc.Driver
    sendEmailAccount: ymtcmeeting@ymtc.com
    sendEmailPassword: Wh123456
    sendEmailSMTPHost: email.xmc.wh
@@ -34,6 +34,7 @@ spring:
 spring:
    #rootPath: http://10.18.88.26:8080
    rootPath: http://localhost:8080
+#   rootPath: http://192.168.139.132:8080
 
 server:
    port: 8080

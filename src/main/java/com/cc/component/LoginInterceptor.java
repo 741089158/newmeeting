@@ -28,7 +28,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         HttpSession httpSession = request.getSession();
         String username = (String) httpSession.getAttribute("username");
         if (username == null || username == "") {
-            username = "E000051";
+            username = "E900916";
         }
         Map<String, String> map = newUserService.queryUserByAccount(username);
         //System.out.println(map);
