@@ -24,11 +24,11 @@
 
 	<dependencies>
 
-		<dependency>
+		<!--<dependency>
 			<groupId>com.mcc</groupId>
 			<artifactId>msso</artifactId>
 			<version>1.0.0</version>
-		</dependency>
+		</dependency>-->
 
 		<dependency>
 			<groupId>mysql</groupId>
