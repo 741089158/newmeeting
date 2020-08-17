@@ -34,10 +34,10 @@ spring:
 spring:
    #rootPath: http://10.18.88.26:8080
 #   rootPath: http://localhost:8080
-   rootPath: http://192.168.139.132:8080
+   rootPath: http://192.168.139.132:8088
 
 server:
-   port: 8080
+   port: 8088
 ---
 #spring:
 #   profiles: development
